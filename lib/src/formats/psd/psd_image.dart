@@ -531,25 +531,11 @@ class PsdImage extends DecodeInfo {
       for (var x = 0; x < width; ++x, si += ns) {
         switch (colorMode) {
           case COLORMODE_RGB:
-            final xi = di;
             pixels[di++] = _ch(channel0!.data, si, ns);
             pixels[di++] = _ch(channel1!.data, si, ns);
             pixels[di++] = _ch(channel2!.data, si, ns);
             pixels[di++] =
                 numChannels >= 4 ? _ch(channel_1!.data, si, ns) : 255;
-
-            final r = pixels[xi];
-            final g = pixels[xi + 1];
-            final b = pixels[xi + 2];
-            final a = pixels[xi + 3];
-            if (a != 0) {
-              // Photoshop/Gimp blend the image against white (argh!),
-              // which is not what we want for compositing. Invert the blend
-              // operation to try and undo the damage.
-              pixels[xi] = (((r + a) - 255) * 255) ~/ a;
-              pixels[xi + 1] = (((g + a) - 255) * 255) ~/ a;
-              pixels[xi + 2] = (((b + a) - 255) * 255) ~/ a;
-            }
             break;
           case COLORMODE_LAB:
             final L = _ch(channel0!.data, si, ns) * 100 >> 8;
